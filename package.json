@@ -1,0 +1,15 @@
+{
+  "name": "ironpeak-gym",
+  "version": "1.0.0",
+  "private": true,
+  "description": "IronPeak Gym website with staff dashboard and SQLite backend",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node scripts/create-staff.js"
+  },
+  "engines": {
+    "node": ">=22.5"
+  }
+}

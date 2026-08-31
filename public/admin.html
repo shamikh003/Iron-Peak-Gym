@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IronPeak Gym Staff Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="admin-body">
+
+<header class="site-header scrolled admin-header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">IRON<span>PEAK</span></a>
+    <nav class="nav nav-static">
+      <a href="index.html">← Back to Site</a>
+      <button class="nav-logout" id="logoutBtn" hidden>Logout</button>
+    </nav>
+  </div>
+</header>
+
+<main class="admin-main" id="appShell">
+  <div class="container">
+
+    <div class="admin-title-row">
+      <div>
+        <p class="eyebrow">STAFF DASHBOARD</p>
+        <h1 class="section-title">Clients &amp; Fee Reminders</h1>
+      </div>
+      <button class="btn btn-primary" id="addClientBtn">+ Quick Add Client</button>
+    </div>
+
+    <!-- ============ PENDING ADMISSIONS ============ -->
+    <div class="pending-section" id="pendingSection" hidden>
+      <div class="pending-head">
+        <h2 class="section-title-sm">Pending Admissions</h2>
+        <span class="pending-count-badge" id="pendingCountBadge">0</span>
+      </div>
+      <p class="pending-sub">Submitted from the public admission form. Approve once the client has shown up and paid, or reject to remove the request.</p>
+      <div class="pending-list" id="pendingList">
+        <!-- rows injected by admin.js -->
+      </div>
+    </div>
+
+    <!-- ============ STATS ============ -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <span class="stat-card-num" id="statTotal">0</span>
+        <span class="stat-card-label">Total Clients</span>
+      </div>
+      <div class="stat-card ok">
+        <span class="stat-card-num" id="statPaid">0</span>
+        <span class="stat-card-label">Paid / Active</span>
+      </div>
+      <div class="stat-card warn">
+        <span class="stat-card-num" id="statDue">0</span>
+        <span class="stat-card-label">Due Soon</span>
+      </div>
+      <div class="stat-card danger">
+        <span class="stat-card-num" id="statOverdue">0</span>
+        <span class="stat-card-label">Overdue</span>
+      </div>
+    </div>
+
+    <!-- ============ SEARCH / FILTER ============ -->
+    <div class="admin-controls">
+      <input type="search" id="searchInput" placeholder="Search by name or phone..." class="search-input">
+      <div class="filter-row">
+        <button class="filter-chip active" data-status="all">All</button>
+        <button class="filter-chip" data-status="paid">Paid</button>
+        <button class="filter-chip" data-status="due">Due Soon</button>
+        <button class="filter-chip" data-status="overdue">Overdue</button>
+      </div>
+    </div>
+
+    <!-- ============ CLIENT TABLE ============ -->
+    <div class="table-wrap">
+      <table class="client-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Plan</th>
+            <th>Join Date</th>
+            <th>Fee Due</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="clientTableBody">
+          <!-- rows injected by admin.js -->
+        </tbody>
+      </table>
+         <p class="empty-state" id="emptyState">There are no client records yet. Add a client via the Admission form or Quick Add.</p>
+    </div>
+
+  </div>
+</main>
+
+<!-- ============ QUICK ADD MODAL ============ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Quick Add Client</h3>
+      <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    </div>
+    <form id="quickAddForm">
+      <div class="form-row">
+        <label for="qaName">Full Name</label>
+        <input type="text" id="qaName" required>
+      </div>
+      <div class="form-row">
+        <label for="qaPhone">Phone Number</label>
+        <input type="tel" id="qaPhone" placeholder="03001234567" required>
+      </div>
+      <div class="form-row">
+        <label for="qaPlan">Fee Plan</label>
+        <select id="qaPlan" required>
+          <option value="" selected disabled>Select a plan</option>
+          <option value="Monthly|3500">Monthly: Rs. 3,500</option>
+          <option value="Quarterly|9500">Quarterly: Rs. 9,500</option>
+          <option value="Annual|32000">Annual: Rs. 32,000</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Add Client</button>
+    </form>
+  </div>
+</div>
+
+<!-- ============ DELETE CONFIRM MODAL ============ -->
+<div class="modal-overlay" id="deleteOverlay">
+  <div class="modal modal-sm">
+    <div class="modal-head">
+      <h3>Remove Client?</h3>
+      <button class="modal-close" id="deleteModalClose" aria-label="Close">&times;</button>
+    </div>
+    <p class="modal-text">This client record will be permanently deleted. Please confirm.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost-dark" id="deleteCancel">Cancel</button>
+      <button class="btn btn-danger" id="deleteConfirm">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LOGIN OVERLAY ============ -->
+<div class="modal-overlay login-overlay" id="loginOverlay">
+  <div class="modal modal-sm">
+    <div class="modal-head">
+      <h3>Staff Login</h3>
+    </div>
+    <p class="modal-text">Log in to view the dashboard.</p>
+    <form id="loginForm">
+      <div class="form-row">
+        <label for="loginUser">Username</label>
+        <input type="text" id="loginUser" autocomplete="username" required>
+      </div>
+      <div class="form-row">
+        <label for="loginPass">Password</label>
+        <input type="password" id="loginPass" autocomplete="current-password" required>
+      </div>
+      <span class="error-msg" id="loginError"></span>
+      <button type="submit" class="btn btn-primary btn-full">Login</button>
+    </form>
+  </div>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>
